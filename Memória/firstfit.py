@@ -1,3 +1,5 @@
+import time
+
 class Memory:
     def __init__(self, size):
         self.size = size
@@ -124,13 +126,32 @@ class Memory:
                     
 mp = Memory(512)
 
+print("\n\n")
 mp.allocate("A", 58)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("B", 150)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("C", 110)
+time.sleep(0.5)
+print("\n\n")
 mp.deallocate("B")
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("E", 90)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("F", 10)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("G", 51)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("H", 26)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("I", 56)
+time.sleep(0.5)
+print("\n\n")
 mp.allocate("J", 100)
