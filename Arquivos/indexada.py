@@ -1,48 +1,32 @@
 class I_node:
     def __init__(self, dirt, date, name, size, node_type):
-        self.dirt = dirt
         self.date = date
         self.name = name
         self.size = size
         self.node_type = node_type
+        self.indexes = []
 
 class Memoria:
     def __init__(self, size):
-        self.data = [None]*size
-        self.table = {}
-        self.str_size = size
+        self.data = [False]*size
+        self.size = size
 
     def add_file(self, file):
         if self.check_storage(file.size):
             pass
     
-    def check_storage(self, size):
-        if self.data.count(None) >= size:
+    def check_storage(self, filesize):
+        if self.data.count(False) >= filesize:
             return True
         return False
     
     def allocate(self, file):
-        indexes = []
-
-        while len(indexes) < file.size:
-            for i in range(self.str_size):
-                if not self.data[i]:
-                    indexes.append(i)
-                    self.data[i] = file.name
+        pass
         
         return indexes
     
     def deallocate(self, file):
-        found = False
-        for i in range(self.str_size):
-            if self.data[i] is file.name:
-                found = True
-                self.data[i] = None
-        
-        if found:
-            del self.table[file.name]
-
-        return found
+        pass
     
     def find_node(self, node):
         return 1
