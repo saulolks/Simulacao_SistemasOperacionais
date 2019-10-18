@@ -5,6 +5,25 @@
 2. Memória
 3. I-Node
 
+Nesta simulação, o OS serve apenas como uma interface de interação entre o
+usuário e a memória. O OS sempre estará mapeando os nomes dos arquivos e 
+diretórios que o usuário solicitar em índices dos blocos correspondentes.
+
+A memória, por sua vez, será representada por uma lista encadeada, e cada
+índice representará um bloco. As posições de memória serão inicializadas
+com `False` e poderão ser preenchidas por uma instância de I-Node, se forem
+diretórios ou "cabeça de arquivos" (posições que armazenam índices); ou 
+`True` caso seja uma parte de arquivo alocada.
+
+Os I-Nodes são objetos que armazenam nome, tipo (diretório ou arquivo), 
+data de criação, tamanho e lista de índices. Caso seja um diretório, o
+seu tamanho será 1 e os índices da sua lista de índices apontarão para os 
+blocos dos diretórios ou arquivos contidos nele. Se for arquivo, terá um 
+tamanho qualquer *n* (maior que 0) e sua lista de índices terá tamanho *n-1* 
+e os índices apontarão para as posições da memória que estão armazenadas as
+partes que compõe o seu arquivo, estas só estarão setadas com `True`, 
+indicando que estão ocupadas.
+
 ## 1. OS
 ### Atributos:
 - `root`: dicionário que armazena todos os diretórios, não pode **jamais**
