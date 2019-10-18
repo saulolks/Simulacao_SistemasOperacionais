@@ -13,7 +13,7 @@ class Memoria:
         
         self.data[0] = I_node(None, 'r', 1, node_type='dir')
 
-    def add_file(self, file):
+    def add_file(self, index, file):
         if self.check_storage(file.size):
             pass
     
@@ -27,7 +27,7 @@ class Memoria:
         
         return indexes
     
-    def deallocate(self, file):
+    def deallocate(self, index, file):
         pass
     
     def find_node(self, node):
@@ -73,9 +73,10 @@ class OS:
         return self.wayback
 
     def mkdir(self, node):
-        inode = I_node(dirt=None, date=None, name=node, size=1, node_type="dir")
+        inode = I_node(date=None, name=node, size=1, node_type="dir")
         
-        if '/' not in node and node not in self.current: #and self.memory.allocate(inode):
+        if '/' not in node and node not in self.current \
+            and self.memory.add_file(self.pointer, inode):
             self.current[node] = {}
         else:
             print("O nome do diretório é inválido!")
@@ -88,7 +89,7 @@ class OS:
     
     def rm(self, node):
         if node in self.current:
-            if self.memory.deallocate(node):
+            if self.memory.deallocate(self.pointer, node):
                 del self.current[node]
     
     def info(self):
