@@ -25,7 +25,7 @@ partes que compõe o seu arquivo, estas só estarão setadas com `True`,
 indicando que estão ocupadas.
 
 ## 1. OS
-### Atributos:
+#### Atributos:
 - `root`: dicionário que armazena todos os diretórios, não pode **jamais**
     apontar para outro caminho. Diretórios e arquivos contidos em `root` são 
     representados como:
@@ -50,7 +50,7 @@ indicando que estão ocupadas.
 - `memory`: instância da classe memória que o OS irá salvar e excluir seus arquivos.
 - `pointer`: posição do bloco do diretório que o usuário está apontando no momento.
 
-## Métodos:
+#### Métodos:
 - `cd`: Esse método realiza a navegação entre os diretórios do sistema, podendo
     voltar um diretório ou avançar quantos quiser. A função checa se o comando
     é para retroceder, se sim, obtém o caminho salvo em `wayback`, divide as
