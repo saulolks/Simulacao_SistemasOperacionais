@@ -1,3 +1,6 @@
+from helpers.i_node import I_node
+
+
 class Memoria:
     def __init__(self, size):
         self.data = [False]*size
