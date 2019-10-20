@@ -38,12 +38,17 @@ class Memoria:
         vetor `file.indexes`.
     """
     def allocate(self, file):
+        primary_alocate = False
+
         for i, value in enumerate(self.data):
             if not value:
-                self.data[i] = file
-                file.indexes.append(i)
+                if not primary_alocate:
+                    self.data[i] = file
+                else:
+                    self.data[i] = True
 
-                if len(file.indexes) > file.size:
+                file.indexes.append(i)
+                if len(file.indexes) >= file.size:
                     break
 
     def deallocate(self, index, file):
