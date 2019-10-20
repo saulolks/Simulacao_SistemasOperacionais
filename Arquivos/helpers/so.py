@@ -36,7 +36,7 @@ class OS:
             try:
                 for item in nodes:
                     self.current = self.current[item]
-                    self.pointer = self.memory.find_node(item)
+                    self.pointer = self.memory.find_node(item, self.pointer)
                     self.wayback = self.wayback + str(item) + "/"
                     self.index_wayback.append(self.pointer)
             except KeyError:
