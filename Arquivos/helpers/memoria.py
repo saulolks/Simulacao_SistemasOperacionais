@@ -10,7 +10,9 @@ class Memoria:
 
     def add_file(self, index, file):
         if self.check_storage(file.size):
-            pass
+            self.allocate(file)
+            return True
+        return False
 
     def check_storage(self, filesize):
         if self.data.count(False) >= filesize:
@@ -18,9 +20,13 @@ class Memoria:
         return False
 
     def allocate(self, file):
-        pass
+        for i, value in enumerate(self.data):
+            if not value:
+                self.data[i] = file
+                file.indexes.append(i)
 
-        # return indexes
+                if len(file.indexes) > file.size:
+                    break
 
     def deallocate(self, index, file):
         pass
