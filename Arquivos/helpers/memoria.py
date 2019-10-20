@@ -20,7 +20,7 @@ class Memoria:
     def allocate(self, file):
         pass
 
-        return indexes
+        # return indexes
 
     def deallocate(self, index, file):
         pass

@@ -1,4 +1,5 @@
 from helpers.memoria import Memoria
+from helpers.i_node import I_node
 
 
 class OS:
@@ -43,8 +44,8 @@ class OS:
     def mkdir(self, node):
         inode = I_node(date=None, name=node, size=1, node_type="dir")
 
-        if '/' not in node and node not in self.current \
-            and self.memory.add_file(self.pointer, inode):
+        if ('/' not in node and node not in self.current
+                and self.memory.add_file(self.pointer, inode)):
             self.current[node] = {}
         else:
             print("O nome do diretório é inválido!")
