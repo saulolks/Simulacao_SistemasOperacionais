@@ -5,7 +5,7 @@ class Memoria:
     def __init__(self, size):
         self.data = [False]*size
         self.size = size
-
+        self.trash = []  # Lista de indices que ainda precisam ser removidos
         self.data[0] = I_node(None, 'r', 1, node_type='dir')
 
     """
@@ -14,14 +14,19 @@ class Memoria:
         realizado o `alocate`.
     """
     def add_file(self, index, file):
-        if self.check_storage(file.size):
+        if self._check_storage(file.size):
             if self.find_node(file.name) is not None:
                 raise KeyError
             self.allocate(file)
+            """
+                Adiciona ao diretório raiz o primeiro indíce que o
+                arquivo/diretório novo está localizado.
+            """
+            self.data[index].indexes.append(file.indexes[0])
         else:
             raise MemoryError
 
-    def check_storage(self, filesize):
+    def _check_storage(self, filesize):
         if self.data.count(False) >= filesize:
             return True
         return False
@@ -54,7 +59,53 @@ class Memoria:
                     break
 
     def deallocate(self, index, file):
-        pass
+        node = self.data[index]
+        find = False
+
+        for i in node.indexes:
+            _file = self.data[i]
+            if _file.name == file:
+                find = True
+                self._clean_memory(_file.indexes)
+                break
+
+        while len(self.trash) != 0:
+            if i in self.trash:
+                self.data[i] = False
+                self.trash.remove(i)
+            self._clean_trash()
+
+        return find
+
+    """
+        Inverte a ordem dos indices, para pegar o ultimo inserido e apartir
+        dele verificar ir removendo da memória, dado que o primeiro indice é
+        o nó inicial.
+    """
+    def _clean_memory(self, indexes):
+        indexes.reverse()
+
+        for i in indexes:
+            _node = self.data[i]
+
+            """
+                Caso esse node tenha mais de um indice em sua lista de
+                indices, ele então tem sub pastas ou sub arquivos que
+                precisam também ser removidos. Esses indices serão
+                inseridos ao `trash`, que será percorrido em outro momento.
+            """
+            if len(_node.indexes) > 1:
+                self.trash.append(i)
+            elif type(self.data[i]) is not bool:
+                self.data[i] = False
+
+    def _clean_trash(self):
+        for i in self.trash:
+            _node_indexes = self.data[i].indexes
+            _node_indexes.remove(i)
+            self._clean_memory(_node_indexes)
+            self.data[i] = False
+            self.trash.remove(i)
 
     def find_node(self, node):
         for i, file in enumerate(self.data):

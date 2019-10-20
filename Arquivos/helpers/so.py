@@ -20,11 +20,14 @@ class OS:
 
             try:
                 self.current = self.root
+
                 for item in nodes:
                     new_wayback = new_wayback + str(item) + "/"
                     self.current = self.current[item]
+
                 self.wayback = new_wayback
                 self.index_wayback.pop()
+                self.pointer = self.index_wayback[-1]
             except KeyError:
                 print("O diretório não existe!")
         else:
