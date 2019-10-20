@@ -13,6 +13,10 @@ if __name__ == '__main__':
 
         inputs = command.split(" ")
 
+        if len(inputs) == 1 and inputs[0] != "ls":
+            print("Comando executado de forma incompleta.")
+            continue
+
         if inputs[0] == "cd":
             text = info + opsystem.cd(inputs[1]) + "$ "
         elif inputs[0] == "ls":
