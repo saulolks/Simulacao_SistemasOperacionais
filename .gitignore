@@ -6,3 +6,6 @@ venv/include/
 venv/
 
 .vscode/
+
+
+__pycache__
