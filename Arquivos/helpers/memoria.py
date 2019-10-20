@@ -15,9 +15,11 @@ class Memoria:
     """
     def add_file(self, index, file):
         if self.check_storage(file.size):
+            if self.find_node(file.name) is not None:
+                raise KeyError
             self.allocate(file)
-            return True
-        return False
+        else:
+            raise MemoryError
 
     def check_storage(self, filesize):
         if self.data.count(False) >= filesize:
@@ -58,4 +60,4 @@ class Memoria:
         for i, file in enumerate(self.data):
             if type(file) != bool and file.name == node:
                 return i
-        raise KeyError
+        return None
