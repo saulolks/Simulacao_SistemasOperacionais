@@ -50,4 +50,7 @@ class Memoria:
         pass
 
     def find_node(self, node):
-        return 1
+        for i, file in enumerate(self.data):
+            if type(file) != bool and file.name == node:
+                return i
+        raise KeyError
