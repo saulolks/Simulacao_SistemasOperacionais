@@ -14,10 +14,8 @@ class OS:
 
     def cd(self, node):
         if node == "..":
-            print(self.wayback)
             nodes = self.wayback.split('/')[1:-2]
             new_wayback = "/"
-            print(nodes)
 
             try:
                 self.current = self.root
@@ -118,5 +116,17 @@ class OS:
         created: {self.memory.data[self.pointer].date}
         head: {self.memory.data[self.pointer].head}
         indexes: {self.memory.data[self.pointer].indexes}
+        """
+        return text
+    
+    def help(self):
+        text = """
+        'cd sample':    navega ao diretorio 'sample'
+        'ls':           lista todos os itens contidos no diretorio corrente
+        'mkdir sample': cria o diretorio 'sample' dentro no diretorio corrente
+        'rm sample':    remove o diretorio 'sample' e todos os seus itens
+        'currinfo':     mostra os detalhes do diretorio corrente
+        'info':         mostra os detalhes gerais do sistema
+        'info sample':  mostra os detalhes do diretorio 'sample'
         """
         return text

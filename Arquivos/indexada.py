@@ -14,7 +14,7 @@ if __name__ == '__main__':
         inputs = command.split(" ")
 
         if (len(inputs) == 1 and inputs[0] != "ls" and inputs[0] != "info"
-            and inputs[0] != "currinfo"):
+            and inputs[0] != "currinfo" and inputs[0] != "help"):
             print("Comando executado de forma incompleta.")
             continue
 
@@ -35,6 +35,8 @@ if __name__ == '__main__':
             print(opsystem.currinfo())
         elif inputs[0] == "touch":
             opsystem.touch(inputs[1], inputs[2])
+        elif inputs[0] == "help":
+            print(opsystem.help())
         else:
             print("Informe um comando válido.")
 

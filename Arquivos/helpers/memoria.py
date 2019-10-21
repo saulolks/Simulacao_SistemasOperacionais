@@ -68,16 +68,26 @@ class Memoria:
             _file = self.data[i]
             if _file.name == file:
                 find = True
-                self._clean_memory(_file.indexes)
-                break
-
-        while len(self.trash) != 0:
-            if i in self.trash:
+                # self._clean_memory(_file.indexes)
+                self.delete_in_cascade(_file.indexes)
                 self.data[i] = False
-                self.trash.remove(i)
+                self.data[index].indexes.remove(i)
+                break
+        print(self.trash)
+        while len(self.trash) != 0:
             self._clean_trash()
+            # if i in self.trash:
+            #     self.data[i] = False
+            #     self.trash.remove(i)
+            # self._clean_trash()
 
         return find
+
+    def delete_in_cascade(self, indexes):
+        for i in indexes:
+            self.trash.append(i)
+            if type(self.data[i]) is not str and self.data[i].indexes:
+                self.delete_in_cascade(self.data[i].indexes)
 
     """
         Inverte a ordem dos indices, para pegar o ultimo inserido e apartir
@@ -103,11 +113,12 @@ class Memoria:
 
     def _clean_trash(self):
         for i in self.trash:
-            _node_indexes = self.data[i].indexes
-            _node_indexes.remove(i)
-            self._clean_memory(_node_indexes)
+            # _node_indexes = self.data[i].indexes
+            # _node_indexes.remove(i)
+            # self._clean_memory(_node_indexes)
             self.data[i] = False
             self.trash.remove(i)
+            print(self.trash)
 
     """
         A partir de um `pointer` que conterá o indice do diretório anterior,
