@@ -36,10 +36,14 @@ class OS:
 
             try:
                 for item in nodes:
-                    self.current = self.current[item]
-                    self.pointer = self.memory.find_node(item, self.pointer)
-                    self.wayback = self.wayback + str(item) + "/"
-                    self.index_wayback.append(self.pointer)
+                    if type(self.current[item]) is bool:
+                        print("Arquivos não podem ser acessados pelo comando 'cd'.")
+                        break
+                    else:
+                        self.current = self.current[item]
+                        self.pointer = self.memory.find_node(item, self.pointer)
+                        self.wayback = self.wayback + str(item) + "/"
+                        self.index_wayback.append(self.pointer)
             except KeyError:
                 print("O diretório não existe!")
 
@@ -71,15 +75,41 @@ class OS:
         if node in self.current:
             if self.memory.deallocate(self.pointer, node):
                 del self.current[node]
+    
+    def touch(self, node, size):
+        if size.isdigit:
+            size = int(size)
+        else:
+            print("O tamanho do arquivo deve ser um inteiro.")
+            return
+        
+        date = datetime.now().strftime("%d/%m/%Y %H:%M")
+        file = I_node(date=date, name=node, size=size, node_type="file")
+        try:
+            self.memory.add_file(self.pointer, file)
+            self.current[node] = True
+        except MemoryError:
+            print("Memória cheia!")
+        except Exception as ex:
+            print(ex)
 
-    def info(self):
-        text = f"""
+    def info(self, node=None):
+        if node:
+            index = self.memory.find_node(node, self.pointer)
+            text = f"""
+        name: {self.memory.data[index].name}
+        created: {self.memory.data[index].date}
+        head: {self.memory.data[index].head}
+        indexes: {self.memory.data[index].indexes}
+            """
+        else:
+            text = f"""
         wayback: {self.wayback}
         indexes: {self.index_wayback}
         root: {self.root}
         current: {self.current}
         allocation: {self.memory.data}
-        """
+            """
         return text
     
     def currinfo(self):

@@ -27,9 +27,14 @@ if __name__ == '__main__':
         elif inputs[0] == "rm":
             opsystem.rm(inputs[1])
         elif inputs[0] == "info":
-            print(opsystem.info())
+            if len(inputs) > 1:
+                print(opsystem.info(node=inputs[1]))
+            else:
+                print(opsystem.info())
         elif inputs[0] == "currinfo":
             print(opsystem.currinfo())
+        elif inputs[0] == "touch":
+            opsystem.touch(inputs[1], inputs[2])
         else:
             print("Informe um comando válido.")
 
