@@ -6,7 +6,7 @@ class Memoria:
         self.data = [False]*size
         self.size = size
         self.trash = []  # Lista de indices que ainda precisam ser removidos
-        self.data[0] = I_node(None, 'r', 1, node_type='dir')
+        self.data[0] = I_node(None, 'r', 1, node_type='dir', head=0)
 
     """
         Verificará primeiramente se a memória (mesmo com fragmentação)
@@ -22,7 +22,7 @@ class Memoria:
                 Adiciona ao diretório raiz o primeiro indíce que o
                 arquivo/diretório novo está localizado.
             """
-            self.data[index].indexes.append(file.indexes[0])
+            self.data[index].indexes.append(file.head)
         else:
             raise MemoryError
 
@@ -51,11 +51,13 @@ class Memoria:
             if not value:
                 if not primary_alocate:
                     self.data[i] = file
+                    file.head = i
+                    primary_alocate = True
                 else:
-                    self.data[i] = True
+                    self.data[i] = file.name
+                    file.indexes.append(i)
 
-                file.indexes.append(i)
-                if len(file.indexes) >= file.size:
+                if len(file.indexes) >= file.size-1:
                     break
 
     def deallocate(self, index, file):

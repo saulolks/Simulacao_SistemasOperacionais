@@ -1,5 +1,6 @@
 from helpers.memoria import Memoria
 from helpers.i_node import I_node
+from datetime import datetime
 
 
 class OS:
@@ -45,7 +46,8 @@ class OS:
         return self.wayback
 
     def mkdir(self, node):
-        inode = I_node(date=None, name=node, size=1, node_type="dir")
+        date = datetime.now().strftime('%d/%m/%Y %H:%M')
+        inode = I_node(date=date, name=node, size=1, node_type="dir")
 
         if '/' not in node and node not in self.current:
             try:
@@ -76,6 +78,15 @@ class OS:
         indexes: {self.index_wayback}
         root: {self.root}
         current: {self.current}
-
+        allocation: {self.memory.data}
+        """
+        return text
+    
+    def currinfo(self):
+        text = f"""
+        name: {self.memory.data[self.pointer].name}
+        created: {self.memory.data[self.pointer].date}
+        head: {self.memory.data[self.pointer].head}
+        indexes: {self.memory.data[self.pointer].indexes}
         """
         return text
