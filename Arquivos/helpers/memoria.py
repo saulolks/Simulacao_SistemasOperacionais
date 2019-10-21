@@ -15,7 +15,7 @@ class Memoria:
     """
     def add_file(self, index, file):
         if self._check_storage(file.size):
-            if self.find_node(file.name) is not None:
+            if self.find_node(file, index) is not None:
                 raise KeyError
             self.allocate(file)
             """
@@ -107,8 +107,17 @@ class Memoria:
             self.data[i] = False
             self.trash.remove(i)
 
-    def find_node(self, node):
-        for i, file in enumerate(self.data):
-            if type(file) != bool and file.name == node:
-                return i
+    """
+        A partir de um `pointer` que conterá o indice do diretório anterior,
+        captura o node_root presente nesse ponto e a partir dos indices
+        presentes no seu `indexes` procurará o `node` em questão.
+    """
+    def find_node(self, node, pointer):
+        node_root = self.data[pointer]
+
+        if len(node_root.indexes) > 0:
+            for i in node_root.indexes:
+                file = self.data[i]
+                if type(file) != bool and file.name == node:
+                    return i
         return None
