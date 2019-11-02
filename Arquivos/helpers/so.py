@@ -1,5 +1,6 @@
 from helpers.memoria import Memoria
 from helpers.i_node import I_node
+from datetime import datetime
 
 
 class OS:
@@ -13,10 +14,8 @@ class OS:
 
     def cd(self, node):
         if node == "..":
-            print(self.wayback)
             nodes = self.wayback.split('/')[1:-2]
             new_wayback = "/"
-            print(nodes)
 
             try:
                 self.current = self.root
@@ -35,17 +34,22 @@ class OS:
 
             try:
                 for item in nodes:
-                    self.current = self.current[item]
-                    self.pointer = self.memory.find_node(item, self.pointer)
-                    self.wayback = self.wayback + str(item) + "/"
-                    self.index_wayback.append(self.pointer)
+                    if type(self.current[item]) is bool:
+                        print("Arquivos não podem ser acessados pelo comando 'cd'.")
+                        break
+                    else:
+                        self.current = self.current[item]
+                        self.pointer = self.memory.find_node(item, self.pointer)
+                        self.wayback = self.wayback + str(item) + "/"
+                        self.index_wayback.append(self.pointer)
             except KeyError:
                 print("O diretório não existe!")
 
         return self.wayback
 
     def mkdir(self, node):
-        inode = I_node(date=None, name=node, size=1, node_type="dir")
+        date = datetime.now().strftime('%d/%m/%Y %H:%M')
+        inode = I_node(date=date, name=node, size=1, node_type="dir")
 
         if '/' not in node and node not in self.current:
             try:
@@ -69,13 +73,60 @@ class OS:
         if node in self.current:
             if self.memory.deallocate(self.pointer, node):
                 del self.current[node]
+    
+    def touch(self, node, size):
+        if size.isdigit:
+            size = int(size)
+        else:
+            print("O tamanho do arquivo deve ser um inteiro.")
+            return
+        
+        date = datetime.now().strftime("%d/%m/%Y %H:%M")
+        file = I_node(date=date, name=node, size=size, node_type="file")
+        try:
+            self.memory.add_file(self.pointer, file)
+            self.current[node] = True
+        except MemoryError:
+            print("Memória cheia!")
+        except Exception as ex:
+            print(ex)
 
-    def info(self):
-        text = f"""
+    def info(self, node=None):
+        if node:
+            index = self.memory.find_node(node, self.pointer)
+            text = f"""
+        name: {self.memory.data[index].name}
+        created: {self.memory.data[index].date}
+        head: {self.memory.data[index].head}
+        indexes: {self.memory.data[index].indexes}
+            """
+        else:
+            text = f"""
         wayback: {self.wayback}
         indexes: {self.index_wayback}
         root: {self.root}
         current: {self.current}
-
+        allocation: {self.memory.data}
+            """
+        return text
+    
+    def currinfo(self):
+        text = f"""
+        name: {self.memory.data[self.pointer].name}
+        created: {self.memory.data[self.pointer].date}
+        head: {self.memory.data[self.pointer].head}
+        indexes: {self.memory.data[self.pointer].indexes}
+        """
+        return text
+    
+    def help(self):
+        text = """
+        'cd sample':    navega ao diretorio 'sample'
+        'ls':           lista todos os itens contidos no diretorio corrente
+        'mkdir sample': cria o diretorio 'sample' dentro no diretorio corrente
+        'rm sample':    remove o diretorio 'sample' e todos os seus itens
+        'currinfo':     mostra os detalhes do diretorio corrente
+        'info':         mostra os detalhes gerais do sistema
+        'info sample':  mostra os detalhes do diretorio 'sample'
         """
         return text
