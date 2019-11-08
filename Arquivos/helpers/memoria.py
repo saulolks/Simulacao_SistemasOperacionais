@@ -1,12 +1,16 @@
 from helpers.i_node import I_node
 
 
-class Memoria:
-    def __init__(self, size):
-        self.data = [False]*size
-        self.size = size
+class Disco:
+    def __init__(self, size, qtd_discos):
+        self.discos = []
+        self.size = size/qtd_discos
         self.trash = []  # Lista de indices que ainda precisam ser removidos
-        self.data[0] = I_node(None, 'r', 1, node_type='dir', head=0)
+        self.discos[0] = I_node(None, 'r', 1, node_type='dir', head=0)
+
+    def _allocate_discos(self):
+        for i in range(self.qtd_discos):
+            self.discos.append([False]*self.tamanho)
 
     """
         Verificará primeiramente se a memória (mesmo com fragmentação)
@@ -22,14 +26,25 @@ class Memoria:
                 Adiciona ao diretório raiz o primeiro indíce que o
                 arquivo/diretório novo está localizado.
             """
-            self.data[index].indexes.append(file.head)
+            self.discos[index].indexes.append(file.head)
         else:
             raise MemoryError
 
     def _check_storage(self, filesize):
-        if self.data.count(False) >= filesize:
+        if self.discos.count(False) >= filesize:
             return True
         return False
+
+    def _get_pos(self):
+        pos = next(i for i, item in enumerate(self.discos[0]) if item is False)
+        return pos
+
+    def _allocate_help(self, data, pos=None):
+        if pos is None:
+            pos = self._get_pos()
+
+        for i in range(len(self.discos)):
+            self.discos[i][pos] = data
 
     """
         Recebendo um `file` que pode ser um diretório ou arquivo, será
@@ -47,47 +62,47 @@ class Memoria:
     def allocate(self, file):
         primary_alocate = False
 
-        for i, value in enumerate(self.data):
+        for i, value in enumerate(self.discos):
             if not value:
                 if not primary_alocate:
-                    self.data[i] = file
                     file.head = i
                     primary_alocate = True
                 else:
-                    self.data[i] = file.name
+                    self._allocate_help(file.name, i)
                     file.indexes.append(i)
 
                 if len(file.indexes) >= file.size-1:
                     break
 
+    def _deallocate_help(self, pos=None, index=None, data=None):
+        for i in range(len(self.discos)):
+            self.discos[i][pos] = data
+            if index is not None:
+                self.discos[i][index].indexes.remove(pos)
+
     def deallocate(self, index, file):
-        node = self.data[index]
+        node = self.discos[0][index]
         find = False
 
         for i in node.indexes:
-            _file = self.data[i]
+            _file = self.discos[0][i]
             if _file.name == file:
                 find = True
-                # self._clean_memory(_file.indexes)
                 self.delete_in_cascade(_file.indexes)
-                self.data[i] = False
-                self.data[index].indexes.remove(i)
+                self._deallocate_help(pos=i, index=index, data=False)
                 break
         print(self.trash)
         while len(self.trash) != 0:
             self._clean_trash()
-            # if i in self.trash:
-            #     self.data[i] = False
-            #     self.trash.remove(i)
-            # self._clean_trash()
 
         return find
 
     def delete_in_cascade(self, indexes):
         for i in indexes:
             self.trash.append(i)
-            if type(self.data[i]) is not str and self.data[i].indexes:
-                self.delete_in_cascade(self.data[i].indexes)
+            if (type(self.discos[0][i]) is not str
+                    and self.discos[0][i].indexes):
+                self.delete_in_cascade(self.discos[0][i].indexes)
 
     """
         Inverte a ordem dos indices, para pegar o ultimo inserido e apartir
@@ -98,7 +113,7 @@ class Memoria:
         indexes.reverse()
 
         for i in indexes:
-            _node = self.data[i]
+            _node = self.discos[i]
 
             """
                 Caso esse node tenha mais de um indice em sua lista de
@@ -108,15 +123,12 @@ class Memoria:
             """
             if len(_node.indexes) > 1:
                 self.trash.append(i)
-            elif type(self.data[i]) is not bool:
-                self.data[i] = False
+            elif type(self.discos[0][i]) is not bool:
+                self._deallocate_help(pos=i, data=False)
 
     def _clean_trash(self):
         for i in self.trash:
-            # _node_indexes = self.data[i].indexes
-            # _node_indexes.remove(i)
-            # self._clean_memory(_node_indexes)
-            self.data[i] = False
+            self._deallocate_help(pos=i, data=False)
             self.trash.remove(i)
             print(self.trash)
 
@@ -126,11 +138,11 @@ class Memoria:
         presentes no seu `indexes` procurará o `node` em questão.
     """
     def find_node(self, node, pointer):
-        node_root = self.data[pointer]
+        node_root = self.discos[0][pointer]
 
         if len(node_root.indexes) > 0:
             for i in node_root.indexes:
-                file = self.data[i]
+                file = self.discos[0][i]
                 if type(file) != bool and file.name == node:
                     return i
         return None

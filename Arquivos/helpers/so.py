@@ -1,15 +1,15 @@
-from helpers.memoria import Memoria
 from helpers.i_node import I_node
+from helpers.Disco import Disco
 from datetime import datetime
 
 
 class OS:
-    def __init__(self, memory_size):
+    def __init__(self, disc_size, qtd_disc):
         self.root = {'r': {}}
         self.current = self.root['r']
         self.wayback = "/r/"
         self.index_wayback = [0]
-        self.memory = Memoria(memory_size)
+        self.memory = Disco(disc_size, qtd_disc)
         self.pointer = 0
 
     def cd(self, node):
@@ -73,14 +73,14 @@ class OS:
         if node in self.current:
             if self.memory.deallocate(self.pointer, node):
                 del self.current[node]
-    
+
     def touch(self, node, size):
         if size.isdigit:
             size = int(size)
         else:
             print("O tamanho do arquivo deve ser um inteiro.")
             return
-        
+
         date = datetime.now().strftime("%d/%m/%Y %H:%M")
         file = I_node(date=date, name=node, size=size, node_type="file")
         try:
@@ -109,7 +109,7 @@ class OS:
         allocation: {self.memory.data}
             """
         return text
-    
+
     def currinfo(self):
         text = f"""
         name: {self.memory.data[self.pointer].name}
@@ -118,7 +118,7 @@ class OS:
         indexes: {self.memory.data[self.pointer].indexes}
         """
         return text
-    
+
     def help(self):
         text = """
         'cd sample':    navega ao diretorio 'sample'
