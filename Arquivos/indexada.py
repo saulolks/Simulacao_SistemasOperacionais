@@ -14,7 +14,7 @@ if __name__ == '__main__':
         inputs = command.split(" ")
 
         if (len(inputs) == 1 and inputs[0] != "ls" and inputs[0] != "info"
-            and inputs[0] != "currinfo" and inputs[0] != "help"):
+                and inputs[0] != "currinfo" and inputs[0] != "help"):
             print("Comando executado de forma incompleta.")
             continue
 

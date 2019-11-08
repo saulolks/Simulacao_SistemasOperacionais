@@ -35,11 +35,13 @@ class OS:
             try:
                 for item in nodes:
                     if type(self.current[item]) is bool:
-                        print("Arquivos não podem ser acessados pelo comando 'cd'.")
+                        print("Arquivos não podem ser acessados pelo comando"
+                              " 'cd'.")
                         break
                     else:
                         self.current = self.current[item]
-                        self.pointer = self.memory.find_node(item, self.pointer)
+                        self.pointer = self.memory.find_node(item,
+                                                             self.pointer)
                         self.wayback = self.wayback + str(item) + "/"
                         self.index_wayback.append(self.pointer)
             except KeyError:
