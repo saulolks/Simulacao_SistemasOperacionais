@@ -3,10 +3,12 @@ from helpers.so import OS
 
 if __name__ == '__main__':
 
+    qtd_disc = int(input("Informe a quantidade de discos que você deseja: "))
+
     info = "\nuser@os:~"
     text = info + "r/$ "
     command = ""
-    opsystem = OS(memory_size=20, disc_size=100, qtd_disc=2)
+    opsystem = OS(disc_size=100, qtd_disc=qtd_disc)
 
     while command != "exit":
         command = input(text)
