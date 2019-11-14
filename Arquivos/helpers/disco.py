@@ -3,17 +3,28 @@ from helpers.i_node import I_node
 
 class Disco:
     def __init__(self, size, qtd_discos):
-        self.discos = []
-        self.size = size/qtd_discos
+        self.size = int(size/qtd_discos)
+        self.qtd_discos = qtd_discos
         self.trash = []  # Lista de indices que ainda precisam ser removidos
-        self.discos[0] = I_node(None, 'r', 1, node_type='dir', head=0)
 
-    def _allocate_discos(self):
+        self._allocate_discos()
+
+        print(f"Tamanho total = {size} \n"
+              f"Tamanho de cada disco = {self.size} \n"
+              f"Quantidade de discos = {self.qtd_discos} \n"
+              f"Disco original = {self.discos}")
+
+    def _allocate_discos(self, root=None):
+        self.discos = []
         for i in range(self.qtd_discos):
-            self.discos.append([False]*self.tamanho)
+            self.discos.append([False]*self.size)
+
+        root = I_node(None, 'r', 1, node_type='dir', head=0)
+        for i in range(self.qtd_discos):
+            self.discos[i][0] = root
 
     """
-        Verificará primeiramente se a memória (mesmo com fragmentação)
+        Verificará primeiramente se o disco (mesmo com fragmentação)
         conseguirá armazenar o `file`. Caso tenha espaço disponível, será
         realizado o `alocate`.
     """
@@ -26,12 +37,18 @@ class Disco:
                 Adiciona ao diretório raiz o primeiro indíce que o
                 arquivo/diretório novo está localizado.
             """
-            self.discos[index].indexes.append(file.head)
+            self._allocate_help(data=file.head, pos=index, is_index=True)
         else:
             raise MemoryError
 
+    """
+        Independente da quantidade de discos, sempre terá pelo menos um.
+        Podendo assim fazer `self.discos[0]`.
+
+        PS: Esse caso se repitirá outras vezes.
+    """
     def _check_storage(self, filesize):
-        if self.discos.count(False) >= filesize:
+        if self.discos[0].count(False) >= filesize:
             return True
         return False
 
@@ -39,12 +56,16 @@ class Disco:
         pos = next(i for i, item in enumerate(self.discos[0]) if item is False)
         return pos
 
-    def _allocate_help(self, data, pos=None):
+    def _allocate_help(self, data, pos=None, is_index=False):
         if pos is None:
             pos = self._get_pos()
 
-        for i in range(len(self.discos)):
-            self.discos[i][pos] = data
+        if not is_index:
+            for i in range(self.qtd_discos):
+                self.discos[i][pos] = data
+        else:
+            for i in range(self.qtd_discos):
+                self.discos[i][pos].indexes.append(data)
 
     """
         Recebendo um `file` que pode ser um diretório ou arquivo, será
@@ -62,21 +83,23 @@ class Disco:
     def allocate(self, file):
         primary_alocate = False
 
-        for i, value in enumerate(self.discos):
+        for i, value in enumerate(self.discos[0]):
             if not value:
                 if not primary_alocate:
                     file.head = i
+                    self._allocate_help(data=file, pos=i)
                     primary_alocate = True
                 else:
-                    self._allocate_help(file.name, i)
+                    self._allocate_help(data=file.name, pos=i)
                     file.indexes.append(i)
 
                 if len(file.indexes) >= file.size-1:
                     break
 
     def _deallocate_help(self, pos=None, index=None, data=None):
-        for i in range(len(self.discos)):
+        for i in range(self.qtd_discos):
             self.discos[i][pos] = data
+
             if index is not None:
                 self.discos[i][index].indexes.remove(pos)
 
@@ -91,6 +114,7 @@ class Disco:
                 self.delete_in_cascade(_file.indexes)
                 self._deallocate_help(pos=i, index=index, data=False)
                 break
+
         print(self.trash)
         while len(self.trash) != 0:
             self._clean_trash()
@@ -106,14 +130,14 @@ class Disco:
 
     """
         Inverte a ordem dos indices, para pegar o ultimo inserido e apartir
-        dele verificar ir removendo da memória, dado que o primeiro indice é
+        dele ir removendo da memória, dado que o primeiro indice é
         o nó inicial.
     """
     def _clean_memory(self, indexes):
         indexes.reverse()
 
         for i in indexes:
-            _node = self.discos[i]
+            _node = self.discos[0][i]
 
             """
                 Caso esse node tenha mais de um indice em sua lista de

@@ -1,5 +1,5 @@
 from helpers.i_node import I_node
-from helpers.Disco import Disco
+from helpers.disco import Disco
 from datetime import datetime
 
 
@@ -9,7 +9,7 @@ class OS:
         self.current = self.root['r']
         self.wayback = "/r/"
         self.index_wayback = [0]
-        self.memory = Disco(disc_size, qtd_disc)
+        self.disc = Disco(disc_size, qtd_disc)
         self.pointer = 0
 
     def cd(self, node):
@@ -40,8 +40,8 @@ class OS:
                         break
                     else:
                         self.current = self.current[item]
-                        self.pointer = self.memory.find_node(item,
-                                                             self.pointer)
+                        self.pointer = self.disc.find_node(item,
+                                                           self.pointer)
                         self.wayback = self.wayback + str(item) + "/"
                         self.index_wayback.append(self.pointer)
             except KeyError:
@@ -55,7 +55,7 @@ class OS:
 
         if '/' not in node and node not in self.current:
             try:
-                self.memory.add_file(self.pointer, inode)
+                self.disc.add_file(self.pointer, inode)
                 self.current[node] = {}
             except KeyError:
                 print("Informe outro nome, já existe um arquivo ou diretório "
@@ -73,7 +73,7 @@ class OS:
 
     def rm(self, node):
         if node in self.current:
-            if self.memory.deallocate(self.pointer, node):
+            if self.disc.deallocate(self.pointer, node):
                 del self.current[node]
 
     def touch(self, node, size):
@@ -86,7 +86,7 @@ class OS:
         date = datetime.now().strftime("%d/%m/%Y %H:%M")
         file = I_node(date=date, name=node, size=size, node_type="file")
         try:
-            self.memory.add_file(self.pointer, file)
+            self.disc.add_file(self.pointer, file)
             self.current[node] = True
         except MemoryError:
             print("Memória cheia!")
@@ -95,12 +95,12 @@ class OS:
 
     def info(self, node=None):
         if node:
-            index = self.memory.find_node(node, self.pointer)
+            index = self.disc.find_node(node, self.pointer)
             text = f"""
-        name: {self.memory.data[index].name}
-        created: {self.memory.data[index].date}
-        head: {self.memory.data[index].head}
-        indexes: {self.memory.data[index].indexes}
+        name: {self.disc.discos[0][index].name}
+        created: {self.disc.discos[0][index].date}
+        head: {self.disc.discos[0][index].head}
+        indexes: {self.disc.discos[0][index].indexes}
             """
         else:
             text = f"""
@@ -108,16 +108,16 @@ class OS:
         indexes: {self.index_wayback}
         root: {self.root}
         current: {self.current}
-        allocation: {self.memory.data}
+        allocation: {self.disc.discos[0]}
             """
         return text
 
     def currinfo(self):
         text = f"""
-        name: {self.memory.data[self.pointer].name}
-        created: {self.memory.data[self.pointer].date}
-        head: {self.memory.data[self.pointer].head}
-        indexes: {self.memory.data[self.pointer].indexes}
+        name: {self.disc.discos[0][self.pointer].name}
+        created: {self.disc.discos[0][self.pointer].date}
+        head: {self.disc.discos[0][self.pointer].head}
+        indexes: {self.disc.discos[0][self.pointer].indexes}
         """
         return text
 
