@@ -3,8 +3,8 @@ from helpers.i_node import I_node
 
 class Memoria:
     def __init__(self, size):
-        self.disk = [False]*size
-        self.size = size
+        self.size = size//3
+        self.disk = [False] * self.size
         self.trash = []  # Lista de indices que ainda precisam ser removidos
         self.disk[0] = I_node(None, 'r', 1, node_type='dir', head=0)
         self.disk2 = self.disk
